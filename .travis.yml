@@ -1,0 +1,17 @@
+dist: xenial
+language: python
+python:
+  - "2.7"
+  - "3.5"
+  - "3.6"
+  - "3.7"
+install:
+  - pip install flake8
+  - pip install -r requirements/requirements.txt -r requirements/requirements-test.txt -r requirements/requirements-flake8.txt
+  - pip install coveralls
+before_script:
+  - flake8 .
+script:
+  - py.test -xv --cov=vxcube_api
+after_success:
+  - coveralls

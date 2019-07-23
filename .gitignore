@@ -1,0 +1,17 @@
+*.pyc
+.DS_Store
+*$py.class
+*~
+.*.sw[pon]
+dist/
+*.egg-info
+*.egg
+*.egg/
+doc/__build/
+build/
+.build/
+.tox/
+.cache/
+.coverage
+coverage.xml
+.idea/
