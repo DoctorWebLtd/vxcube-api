@@ -16,6 +16,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
 
 import datetime
+import io
 
 import mock
 import pytest
@@ -269,15 +270,11 @@ def test_upload_sample():
     request = mock.Mock(return_value={"id": 23})
     with mock.patch("vxcube_api.raw_api.VxCubeApiRequest.request", new=request):
         api = VxCubeApi(base_url="http://test", version=2.0)
-        file = mock.mock_open()
-        file.read = True
-
+        file = io.BytesIO(b"test_data")
+        file.name = "test.name"
         sample = api.upload_sample(file)
         assert sample.id == 23
         assert sample._raw_api is api._raw_api
-
-    request.assert_called_with(method="post", url="http://test/api-2.0/samples",
-                               params={}, headers={}, files={"file": file})
 
 
 def test_vxuserapi_one_analysis():

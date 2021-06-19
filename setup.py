@@ -13,15 +13,13 @@ print(__pckg__ + " version: " + __version__)
 
 
 def load_requirements():
-    print(os.getcwd())
     with open(os.path.join(os.getcwd(), "requirements", "requirements.txt")) as requirements:
         return requirements.read().splitlines()
 
 
 def load_long_description():
-    with open("README.md") as f:
-        readme = f.read()
-        return readme
+    with open(os.path.join(os.getcwd(), "README.md")) as f:
+        return f.read()
 
 
 setup(name=__pckg__,

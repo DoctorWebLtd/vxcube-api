@@ -30,18 +30,16 @@ def test_file_wrapper_raise():
 def test_file_wrapper_string():
     file = mock.mock_open(read_data=b"test_data")
     with mock.patch("vxcube_api.utils.open", file):
-        with file_wrapper("test_file") as file_dict:
-            assert "file" in file_dict
-            assert file_dict["file"].read() == b"test_data"
+        with file_wrapper("test_file") as file_:
+            assert file_.read() == b"test_data"
 
     file.assert_called_with("test_file", "rb")
 
 
 def test_file_wrapper_file_like_obj():
     file = mock.Mock(**{"read.return_value": "test_data"})
-    with file_wrapper(file) as file_dict:
-        assert "file" in file_dict
-        assert file_dict["file"] is file
+    with file_wrapper(file) as file_:
+        assert file_ is file
 
 
 def test_filter_data():

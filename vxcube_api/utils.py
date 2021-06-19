@@ -36,12 +36,11 @@ except NameError:
 @contextmanager
 def file_wrapper(file):
     if hasattr(file, "read"):
-        _file = file
-        yield {"file": _file}
+        yield file
 
     elif isinstance(file, str):
         with open(file, "rb") as _file:
-            yield {"file": _file}
+            yield _file
     else:
         raise VxCubeApiException("FileWrapper can be used only with a path or file-like object")
 

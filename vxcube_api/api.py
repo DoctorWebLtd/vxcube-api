@@ -18,6 +18,8 @@
 import logging
 from functools import wraps
 
+from requests_toolbelt.multipart.encoder import MultipartEncoder
+
 from vxcube_api.errors import VxCubeApiException
 from vxcube_api.objects import Analysis, Format, License, Platform, Sample, Session, Task
 from vxcube_api.raw_api import VxCubeRawApi
@@ -185,7 +187,10 @@ class VxCubeApi(object):
         """
         logger.debug("Upload sample to server")
         with file_wrapper(file) as file:
-            return self._raw_api.samples.post(files=file)
+            fields = {"file": (file.name, file, "application/octet-stream")}
+            enc = MultipartEncoder(fields=fields)
+            headers = {"Content-Type": enc.content_type}
+            return self._raw_api.samples.post(data=enc, headers=headers)
 
     @return_objects(Analysis, add_raw_api=True)
     def analyses(self, analysis_id=None, count=None, offset=None, format_group_name=None):
@@ -224,7 +229,8 @@ class VxCubeApi(object):
         return iterator(func=self.analyses, count_per_request=count_per_request, item_key=None, **kwargs)
 
     @return_objects(Analysis, add_raw_api=True)
-    def start_analysis(self, sample_id, platforms, analysis_time=None, format_name=None, custom_cmd=None):
+    def start_analysis(self, sample_id, platforms, analysis_time=None, format_name=None,
+                       custom_cmd=None, generate_cureit=None, drop_size_limit=None, net=None):
         """
         Start sample analysis.
 
@@ -233,6 +239,9 @@ class VxCubeApi(object):
         :param int analysis_time:
         :param str format_name:
         :param str custom_cmd:
+        :param bool generate_cureit:
+        :param int drop_size_limit:
+        :param str net:
         :return Analyse:
         :raises VxCubeApiHttpException
         """
@@ -242,7 +251,10 @@ class VxCubeApi(object):
             platforms=platforms,
             analysis_time=analysis_time,
             format_name=format_name,
-            custom_cmd=custom_cmd
+            custom_cmd=custom_cmd,
+            generate_cureit=generate_cureit,
+            drop_size_limit=drop_size_limit,
+            net=net
         )
         return self._raw_api.analyses.post(json=data)
 

@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
                                                                                                          "login"])
 @click.option("--base-url", default=client_config.base_url, show_default=True, cls=Mutex, not_required_if=["config"])
 @click.option("--version", default=client_config.version, show_default=True, cls=Mutex, not_required_if=["config"])
-@click.option("--verbose", "-v", default=False, is_flag=True, help="Enables verbose mode.")
+@click.option("--verbose", "-v", default=False, is_flag=True, help="Enable verbose mode")
 @click.pass_context
 def cli(ctx, api_key, base_url, version, verbose):
     root_logger_setup(level=logging.DEBUG if verbose else logging.INFO)
@@ -97,12 +97,15 @@ def upload_sample(api, sample_path):
 @cli.command("analyse")
 @click.argument("sample-id", type=int)
 @click.option("-p", "--platform", multiple=True, required=True,
-              help="use 'all' for analyse on all available platforms")
-@click.option("-t", "--time", default=60, help="sample analysis time in seconds")
-@click.option("-f", "--format", default=None, help="sample format name")
-@click.option("-c", "--cmd", default=None, help="sample analysis specific command")
+              help="Use 'all' to analyse on all available platforms")
+@click.option("-t", "--time", default=60, help="Sample analysis time in seconds")
+@click.option("-f", "--format", default=None, help="Sample format name")
+@click.option("-c", "--cmd", default=None, help="Specific sample analysis command")
+@click.option("-g", "--generate-cureit", default=False, help="Generate CureIt!")
+@click.option("-d", "--drop-size-limit", default=64, help="Total size limit for drops, MB")
+@click.option("-n", "--net", default="vpn://", help="Proxy parameters")
 @pass_api
-def analyse(api, sample_id, platform, time, format, cmd):
+def analyse(api, sample_id, platform, time, format, cmd, generate_cureit, drop_size_limit, net):
     """Start analysis by sample ID."""
     if "all" in platform:
         sample = api.samples(sample_id=sample_id)
@@ -113,7 +116,10 @@ def analyse(api, sample_id, platform, time, format, cmd):
         platforms=platform,
         analysis_time=time,
         format_name=format,
-        custom_cmd=cmd
+        custom_cmd=cmd,
+        generate_cureit=generate_cureit,
+        drop_size_limit=drop_size_limit,
+        net=net
     )
     logger.info("Analysis {analysis.id} started".format(analysis=analysis))
 

@@ -176,7 +176,10 @@ def test_analyse():
             "--platform", "win7x64",
             "-t", "30",
             "-f", "exe",
-            "-c", "CMD_TEST"
+            "-c", "CMD_TEST",
+            "-g", True,
+            "-d", "100",
+            "-n", "vpn://"
         ]
         result = runner.invoke(cli, params)
     assert normal_execution(result)
@@ -188,7 +191,10 @@ def test_analyse():
         platforms=("winxpx86", "win7x64"),
         analysis_time=30,
         format_name="exe",
-        custom_cmd="CMD_TEST"
+        custom_cmd="CMD_TEST",
+        generate_cureit=True,
+        drop_size_limit=100,
+        net="vpn://"
     )
 
 
@@ -207,7 +213,10 @@ def test_analyse_all_platforms():
             "-p", "all",
             "-t", "30",
             "-f", "exe",
-            "-c", "CMD_TEST"
+            "-c", "CMD_TEST",
+            "-g", True,
+            "-d", "100",
+            "-n", "vpn://"
         ]
         result = runner.invoke(cli, params)
     assert normal_execution(result)
@@ -220,7 +229,10 @@ def test_analyse_all_platforms():
         platforms=["p1", "p2", "p3"],
         analysis_time=30,
         format_name="exe",
-        custom_cmd="CMD_TEST"
+        custom_cmd="CMD_TEST",
+        generate_cureit=True,
+        drop_size_limit=100,
+        net="vpn://"
     )
 
 

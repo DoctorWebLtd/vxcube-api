@@ -22,7 +22,7 @@ Dr.Web vxCube API Client supports command line. To get information about availab
 $ vxcube_client --help
 ```
 
-Сommand list:
+Command list:
 
 | Command            | Description                                                             |
 | ------------------ | ----------------------------------------------------------------------- |
@@ -64,7 +64,7 @@ API_KEY = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
 
 
 def main():
-    # Сreate VxCubeApi
+    # Create VxCubeApi
     vxcube = VxCubeApi(api_key=API_KEY)
 
     # Upload sample
