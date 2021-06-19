@@ -175,7 +175,7 @@ def subscribe(api, analysis_id):
     analysis = api.analyses(analysis_id=analysis_id)
     tasks_msg = {}
     for i, task in enumerate(analysis.tasks):
-        tasks_msg[task.id] = "[{task.platform_code:<8}] [{{progress}}%] {{message}}".format(task=task)
+        tasks_msg[task.id] = "[{task.platform_code:<13}] [{{progress}}%] {{message}}".format(task=task)
 
     if analysis.is_processing:
         for progress_args in analysis.subscribe_progress():
