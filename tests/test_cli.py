@@ -179,7 +179,13 @@ def test_analyse():
             "-c", "CMD_TEST",
             "-g", True,
             "-d", "100",
-            "-n", "vpn://"
+            "-n", "vpn://",
+            "--forwards", "4545",
+            "--forwards", "3454:udp",
+            "--dump-browsers", False,
+            "--dump-mapped", False,
+            "--dump-ssdt", False,
+            "--dump-processes", False
         ]
         result = runner.invoke(cli, params)
     assert normal_execution(result)
@@ -194,7 +200,25 @@ def test_analyse():
         custom_cmd="CMD_TEST",
         generate_cureit=True,
         drop_size_limit=100,
-        net="vpn://"
+        net="vpn://",
+        copylog=False,
+        crypto_api_limit=64,
+        dump_size_limit=64,
+        flex_time=False,
+        forwards=("4545", "3454:udp"),
+        get_lib=False,
+        injects_limit=100,
+        monkey_clicker=False,
+        dump_browsers=False,
+        dump_mapped=False,
+        dump_ssdt=False,
+        dump_processes=False,
+        no_clean=False,
+        optional_count=None,
+        proc_lifetime=None,
+        set_date=None,
+        userbatch=None,
+        write_file_limit=512
     )
 
 
@@ -216,7 +240,8 @@ def test_analyse_all_platforms():
             "-c", "CMD_TEST",
             "-g", True,
             "-d", "100",
-            "-n", "vpn://"
+            "-n", "vpn://",
+            "--forwards", "5565"
         ]
         result = runner.invoke(cli, params)
     assert normal_execution(result)
@@ -232,7 +257,25 @@ def test_analyse_all_platforms():
         custom_cmd="CMD_TEST",
         generate_cureit=True,
         drop_size_limit=100,
-        net="vpn://"
+        net="vpn://",
+        copylog=False,
+        crypto_api_limit=64,
+        dump_size_limit=64,
+        flex_time=False,
+        forwards=("5565",),
+        get_lib=False,
+        injects_limit=100,
+        monkey_clicker=False,
+        dump_browsers=True,
+        dump_mapped=True,
+        dump_ssdt=True,
+        dump_processes=True,
+        no_clean=False,
+        optional_count=None,
+        proc_lifetime=None,
+        set_date=None,
+        userbatch=None,
+        write_file_limit=512
     )
 
 
@@ -247,14 +290,14 @@ def test_delete_analyse():
             "--version", "42",
             "--api-key", "test-api-key",
             "delete",
-            "23"
+            "some uuid"
         ]
         result = runner.invoke(cli, params)
     assert normal_execution(result)
     assert "Mock" in result.output
 
     vxcube_api_cls.assert_called_with(api_key="test-api-key", base_url="http://test.url", version=42)
-    api.analyses.assert_called_with(analysis_id=23)
+    api.analyses.assert_called_with(analysis_id="some uuid")
     analysis.delete.assert_called_once()
 
 
@@ -289,7 +332,7 @@ def test_subscribe():
             "--version", "42",
             "--api-key", "test-api-key",
             "subscribe-analysis",
-            "23"
+            "some uuid"
         ]
         result = runner.invoke(cli, params)
 
@@ -305,7 +348,7 @@ def test_subscribe():
     assert "dary" in result.output
 
     vxcube_api_cls.assert_called_with(api_key="test-api-key", base_url="http://test.url", version=42)
-    api.analyses.assert_called_with(analysis_id=23)
+    api.analyses.assert_called_with(analysis_id="some uuid")
 
 
 def test_download_sample():
@@ -477,7 +520,7 @@ def test_download_analysis_archive():
             "--api-key", "test-api-key",
             "download",
             "archive",
-            "--analysis-id", "23",
+            "--analysis-id", "some uuid",
             "--output", "test_output"
         ]
         with runner.isolated_filesystem():
@@ -487,7 +530,7 @@ def test_download_analysis_archive():
         assert "test_output" in result.output
 
     vxcube_api_cls.assert_called_with(api_key="test-api-key", base_url="http://test.url", version=42)
-    api.analyses.assert_called_with(analysis_id=23)
+    api.analyses.assert_called_with(analysis_id="some uuid")
     analysis.download_archive.assert_called_once()
 
 
@@ -528,7 +571,7 @@ def test_download_archive_multiple_parameters():
             "--api-key", "test-api-key",
             "download",
             "archive",
-            "--analysis-id", "23",
+            "--analysis-id", "some uuid",
             "--task-id", "23"
         ]
         result = runner.invoke(cli, params)

@@ -353,7 +353,11 @@ def test_start_analysis():
         assert analysis._raw_api is api._raw_api
 
     request.assert_called_with(method="post", url="http://test/api-2.0/analyses", params={}, headers={},
-                               json={"sample_id": 23, "platforms": ["p1", "p2"], "analysis_time": 30})
+                               json={"sample_id": 23, "platforms": ["p1", "p2"], "analysis_time": 30, "copylog": False,
+                                     "crypto_api_limit": 64, "dump_size_limit": 64, "flex_time": False,
+                                     "get_lib": False, "injects_limit": 100, "dump_browsers": True,
+                                     "dump_mapped": True, "dump_ssdt": True, "dump_processes": True, "no_clean": False,
+                                     "write_file_limit": 512})
 
 
 def test_get_task():

@@ -14,7 +14,7 @@
 # AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
 # DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
-
+import json
 import logging
 from functools import wraps
 
@@ -230,7 +230,11 @@ class VxCubeApi(object):
 
     @return_objects(Analysis, add_raw_api=True)
     def start_analysis(self, sample_id, platforms, analysis_time=None, format_name=None,
-                       custom_cmd=None, generate_cureit=None, drop_size_limit=None, net=None):
+                       custom_cmd=None, generate_cureit=None, drop_size_limit=None, net=None, copylog=False,
+                       crypto_api_limit=64, dump_size_limit=64, flex_time=False, forwards=None, get_lib=False,
+                       injects_limit=100, monkey_clicker=None, dump_browsers=True, dump_mapped=True,
+                       dump_ssdt=True, no_clean=False, optional_count=None, proc_lifetime=None, set_date=None,
+                       userbatch=None, dump_processes=True, write_file_limit=512):
         """
         Start sample analysis.
 
@@ -242,6 +246,24 @@ class VxCubeApi(object):
         :param bool generate_cureit:
         :param int drop_size_limit:
         :param str net:
+        :param bool copylog:
+        :param int crypto_api_limit:
+        :param int dump_size_limit:
+        :param bool flex_time:
+        :param list forwards:
+        :param bool get_lib:
+        :param int injects_limit:
+        :param bool monkey_clicker:
+        :param bool dump_browsers:
+        :param bool dump_mapped:
+        :param bool dump_ssdt:
+        :param bool no_clean:
+        :param int optional_count:
+        :param int proc_lifetime:
+        :param str set_date:
+        :param str userbatch:
+        :param bool dump_processes:
+        :param int write_file_limit:
         :return Analyse:
         :raises VxCubeApiHttpException
         """
@@ -254,8 +276,29 @@ class VxCubeApi(object):
             custom_cmd=custom_cmd,
             generate_cureit=generate_cureit,
             drop_size_limit=drop_size_limit,
-            net=net
+            net=net,
+            copylog=copylog,
+            crypto_api_limit=crypto_api_limit,
+            dump_size_limit=dump_size_limit,
+            flex_time=flex_time,
+            forwards=forwards,
+            get_lib=get_lib,
+            injects_limit=injects_limit,
+            monkey_clicker=monkey_clicker,
+            dump_browsers=dump_browsers,
+            dump_mapped=dump_mapped,
+            dump_ssdt=dump_ssdt,
+            dump_processes=dump_processes,
+            no_clean=no_clean,
+            optional_count=optional_count,
+            proc_lifetime=proc_lifetime,
+            set_date=set_date,
+            write_file_limit=write_file_limit
         )
+        if userbatch:
+            with file_wrapper(userbatch) as file:
+                return self._raw_api.analyses.post(files={"userbatch": (file.name, file, "application/octet-stream")},
+                                                   data=data)
         return self._raw_api.analyses.post(json=data)
 
     @return_objects(Task, add_raw_api=True)

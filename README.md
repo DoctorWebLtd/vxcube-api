@@ -33,7 +33,7 @@ Command list:
 | delete             | Delete analysis results                                                 |
 | download sample    | Download sample                                                         |
 | download archive   | Download archive with analysis results                                  |
-| subscribe_analysis | Get real-time data about analysis progress                              |
+| subscribe-analysis | Get real-time data about analysis progress                              |
  
 Example:
 ```bash
@@ -44,7 +44,7 @@ Sample uploaded successful:
         - format: exe
         - platforms: ['winxpx86', 'win7x86', 'win7x64', 'win10x64']
 $ vxcube_client analyse 2342 -p win7x86 -p win10x64 --time 30
-$ vxcube_client subscribe_analysis 1516
+$ vxcube_client subscribe-analysis d4e22a38-6bdc-4902-881d-897687023c30
 ... 
 [win7x86 ] [50%] Waiting for the 3580 (0xdfc) process to be dumped...
 [win10x64] [20%] File is running (19 of 30 sec remaining)...

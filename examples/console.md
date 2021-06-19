@@ -24,12 +24,12 @@ Sample uploaded successful:
 Start sample analysis
 ```bash
 $ vxcube_client analyse 2342 -p win7x86 -p win10x64 --time 30 
-Analysis 1516 started
+Analysis 50f87eee-d622-4026-ac92-338a0048ab60 started
 ```
 
 Get real-time data about analysis progress
 ```bash
-$ vxcube_client subscribe_analysis 1516
+$ vxcube_client subscribe_analysis 50f87eee-d622-4026-ac92-338a0048ab60
 ... 
 [win7x86 ] [50%] Waiting for the 3580 (0xdfc) process to be dumped...
 [win10x64] [20%] File is running (19 of 30 sec remaining)...

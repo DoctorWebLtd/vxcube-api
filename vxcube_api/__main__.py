@@ -27,7 +27,6 @@ from vxcube_api.errors import VxCubeApiException
 from vxcube_api.objects import Sample
 from vxcube_api.utils import message_compat, root_logger_setup
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -104,8 +103,34 @@ def upload_sample(api, sample_path):
 @click.option("-g", "--generate-cureit", default=False, help="Generate CureIt!")
 @click.option("-d", "--drop-size-limit", default=64, help="Total size limit for drops, MB")
 @click.option("-n", "--net", default="vpn://", help="Proxy parameters")
+@click.option("--copylog", default=False, help="copy hyperbox log or not")
+@click.option("--crypto-api-limit", type=int, default=64, help="Crypto API buffers limit in Mb")
+@click.option("--dump-size-limit", default=64, type=int,
+              help="include dump size(MB) limit info into report (value must be "
+                   "in range [0...512], default: 64)")
+@click.option("--flex-time", default=False, help="flexible sample execution time")
+@click.option("--forwards", multiple=True, help="forward specified ports from guest(format: protocol(optional):port)")
+@click.option("--get-lib", default=False, help="get *.lib files and raw dumps")
+@click.option("--injects-limit", default=100, help="injects count limit")
+@click.option("--monkey-clicker", default=False, help="Enable auto button clicker or not")
+@click.option("--dump-browsers", default=True, help="dump browsers modules")
+@click.option("--dump-mapped", default=True, help="dump mapped files (only after execution)")
+@click.option("--dump-ssdt", default=True, help="dump SSDT")
+@click.option("--dump-processes", default=True, help="dump processes (only after execution)")
+@click.option("--no-clean", default=False, help="get all allocs and drops")
+@click.option("--optional-count", default=None,
+              help="Maximum number of triggered optional breakpoints")
+@click.option("--proc-lifetime", default=None, help="Lifetime of processes in seconds, format: "
+                                                    "[proc_name_str,lifetime][,]..., for example: "
+                                                    "notepad.exe,35,winword.exe,20")
+@click.option("--set-date", default=None, help="set system date (format: 17.03.2022)")
+@click.option("--userbatch", help="user defined batch file to start before loader")
+@click.option("--write-file-limit", default=512, help="WriteFile buffers limit in Mb")
 @pass_api
-def analyse(api, sample_id, platform, time, format, cmd, generate_cureit, drop_size_limit, net):
+def analyse(api, sample_id, platform, time, format, cmd, generate_cureit, drop_size_limit, net, copylog,
+            crypto_api_limit, dump_size_limit, flex_time, forwards, get_lib, injects_limit, monkey_clicker,
+            dump_browsers, dump_mapped, dump_ssdt, no_clean, optional_count, proc_lifetime, set_date, userbatch,
+            dump_processes, write_file_limit):
     """Start analysis by sample ID."""
     if "all" in platform:
         sample = api.samples(sample_id=sample_id)
@@ -119,13 +144,31 @@ def analyse(api, sample_id, platform, time, format, cmd, generate_cureit, drop_s
         custom_cmd=cmd,
         generate_cureit=generate_cureit,
         drop_size_limit=drop_size_limit,
-        net=net
+        net=net,
+        copylog=copylog,
+        crypto_api_limit=crypto_api_limit,
+        dump_size_limit=dump_size_limit,
+        flex_time=flex_time,
+        forwards=forwards or None,
+        get_lib=get_lib,
+        injects_limit=injects_limit,
+        monkey_clicker=monkey_clicker,
+        dump_browsers=dump_browsers,
+        dump_mapped=dump_mapped,
+        dump_ssdt=dump_ssdt,
+        dump_processes=dump_processes,
+        no_clean=no_clean,
+        optional_count=optional_count,
+        proc_lifetime=proc_lifetime,
+        set_date=set_date,
+        userbatch=userbatch,
+        write_file_limit=write_file_limit
     )
     logger.info("Analysis {analysis.id} started".format(analysis=analysis))
 
 
 @cli.command("subscribe-analysis")
-@click.argument("analysis-id", type=int)
+@click.argument("analysis-id", type=str)
 @pass_api
 def subscribe(api, analysis_id):
     """Get real-time data about analysis progress."""
@@ -147,7 +190,7 @@ def subscribe(api, analysis_id):
 
 
 @cli.command("delete")
-@click.argument("analysis-id", type=int)
+@click.argument("analysis-id", type=str)
 @pass_api
 def delete_analysis(api, analysis_id):
     """Delete analysis by ID."""
@@ -202,7 +245,7 @@ def download_sample(api, id, md5, sha1, sha256, output):
 
 
 @download.command("archive")
-@click.option("--analysis-id", cls=Mutex, not_required_if=["task_id"], type=int)
+@click.option("--analysis-id", cls=Mutex, not_required_if=["task_id"], type=str)
 @click.option("--task-id", cls=Mutex, not_required_if=["analyse_id"], type=int)
 @click.option("-o", "--output", type=click.File("wb"))
 @pass_api

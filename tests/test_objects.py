@@ -87,7 +87,7 @@ def test_sample():
         sha1="sha1hash",
         sha256="sha256hash",
         is_x64=True,
-        platforms=["win7x64", "win10x64"],
+        platforms=["win7x64", "win10x64_1511"],
     )
     sample = Sample(**values)
     assert sample.id == 1
@@ -99,7 +99,7 @@ def test_sample():
     assert sample.sha1 == "sha1hash"
     assert sample.sha256 == "sha256hash"
     assert sample.is_x64 is True
-    assert sample.platforms == ["win7x64", "win10x64"]
+    assert sample.platforms == ["win7x64", "win10x64_1511"]
 
     with pytest.raises(VxCubeApiException):
         sample._api()
