@@ -82,15 +82,23 @@ def get_token(api_info, login, password, new_key):
 @pass_api
 def upload_sample(api, sample_path):
     """Upload sample to Dr.Web vxCube server."""
-    sample = api.upload_sample(file=sample_path)
-    logger.info("Sample uploaded successfully:")
-    logger.info("\t{sample.name} [id: {sample.id}]".format(sample=sample))
-    if sample.format_name:
-        logger.info("\t - format: {sample.format_name}\n"
-                    "\t - platforms: {sample.platforms}"
-                    "".format(sample=sample))
+
+    def _log_sample_info(sample):
+        logger.info("Sample uploaded successfully:")
+        logger.info("\t{sample.name} [id: {sample.id}]".format(sample=sample))
+        if sample.format_name:
+            logger.info("\t - format: {sample.format_name}\n"
+                        "\t - platforms: {sample.platforms}"
+                        "".format(sample=sample))
+        else:
+            logger.warning("File format not recognized: specify format when starting analysis")
+
+    response = api.upload_sample(file=sample_path)
+    if isinstance(response, list):
+        for sample in response:
+            _log_sample_info(sample)
     else:
-        logger.warning("File format not recognized: specify format when starting analysis")
+        _log_sample_info(response)
 
 
 @cli.command("analyse")

@@ -190,7 +190,10 @@ class VxCubeApi(object):
             fields = {"file": (file.name, file, "application/octet-stream")}
             enc = MultipartEncoder(fields=fields)
             headers = {"Content-Type": enc.content_type}
-            return self._raw_api.samples.post(data=enc, headers=headers)
+            res = self._raw_api.samples.post(data=enc, headers=headers)
+            if "samples" in res:
+                res = res["samples"]
+            return res
 
     @return_objects(Analysis, add_raw_api=True)
     def analyses(self, analysis_id=None, count=None, offset=None, format_group_name=None):
