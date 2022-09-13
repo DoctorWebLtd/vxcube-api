@@ -55,6 +55,7 @@ class ClientConfig(object):
         }
 
     def __getattr__(self, item):
+        """Hooks getting fields from values varible."""
         return self.values.get(item)
 
     __getitem__ = __getattr__
@@ -80,15 +81,6 @@ class ClientConfig(object):
 client_config = ClientConfig()
 
 
-def with_options(options):
-    def wrapper(func):
-        for option in reversed(options):
-            func = option(func)
-        return func
-
-    return wrapper
-
-
 def api_from_repo(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -109,8 +101,9 @@ def api_from_repo(func):
 class Mutex(click.Option):
     def __init__(self, *args, **kwargs):
         self.not_required_if = kwargs.pop("not_required_if")
+        if not self.not_required_if:
+            raise click.UsageError("'not_required_if' parameter is required")
 
-        assert self.not_required_if, "'not_required_if' parameter is required"
         kwargs["help"] = ("{orig_help}Option is mutually exclusive with [{options}]".format(
             orig_help=kwargs.get("help", ""), options=", ".join(self.not_required_if)).strip())
         super(Mutex, self).__init__(*args, **kwargs)

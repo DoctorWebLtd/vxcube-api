@@ -14,14 +14,13 @@
 # AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
 # DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
-import sys
 import logging
+import sys
 from contextlib import contextmanager
 
 from colorlog import ColoredFormatter
 
 from vxcube_api.errors import VxCubeApiException
-
 
 UTF8_CONSOLE = hasattr(sys, "stdout") and sys.stdout and sys.stdout.encoding.lower() == "utf-8"
 

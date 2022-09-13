@@ -22,7 +22,8 @@ import sys
 import click
 
 from vxcube_api.api import VxCubeApi
-from vxcube_api.cli_helpers import client_config, Mutex, ApiInfo, pass_api_info, pass_api
+from vxcube_api.cli_helpers import (ApiInfo, Mutex, client_config, pass_api,
+                                    pass_api_info)
 from vxcube_api.errors import VxCubeApiException
 from vxcube_api.objects import Sample
 from vxcube_api.utils import message_compat, root_logger_setup
@@ -82,8 +83,8 @@ def get_token(api_info, login, password, new_key):
 @pass_api
 def upload_sample(api, sample_path):
     """Upload sample to Dr.Web vxCube server."""
-
-    def _log_sample_info(sample):
+    samples = api.upload_samples(file=sample_path)
+    for sample in samples:
         logger.info("Sample uploaded successfully:")
         logger.info("\t{sample.name} [id: {sample.id}]".format(sample=sample))
         if sample.format_name:
@@ -92,13 +93,6 @@ def upload_sample(api, sample_path):
                         "".format(sample=sample))
         else:
             logger.warning("File format not recognized: specify format when starting analysis")
-
-    response = api.upload_sample(file=sample_path)
-    if isinstance(response, list):
-        for sample in response:
-            _log_sample_info(sample)
-    else:
-        _log_sample_info(response)
 
 
 @cli.command("analyse")
@@ -135,7 +129,7 @@ def upload_sample(api, sample_path):
 @click.option("--userbatch", help="user defined batch file to start before loader")
 @click.option("--write-file-limit", default=512, help="WriteFile buffers limit in Mb")
 @pass_api
-def analyse(api, sample_id, platform, time, format, cmd, generate_cureit, drop_size_limit, net, copylog,
+def analyse(api, sample_id, platform, time, format, cmd, generate_cureit, drop_size_limit, net, copylog,  # noqa: A002
             crypto_api_limit, dump_size_limit, flex_time, forwards, get_lib, injects_limit, monkey_clicker,
             dump_browsers, dump_mapped, dump_ssdt, no_clean, optional_count, proc_lifetime, set_date, userbatch,
             dump_processes, write_file_limit):
@@ -182,7 +176,7 @@ def subscribe(api, analysis_id):
     """Get real-time data about analysis progress."""
     analysis = api.analyses(analysis_id=analysis_id)
     tasks_msg = {}
-    for i, task in enumerate(analysis.tasks):
+    for task in analysis.tasks:
         tasks_msg[task.id] = "[{task.platform_code:<13}] [{{progress}}%] {{message}}".format(task=task)
 
     if analysis.is_processing:
@@ -214,7 +208,7 @@ def delete_analysis(api, analysis_id):
 @click.option("--sha256", type=str, cls=Mutex, not_required_if=["id", "md5", "sha1"])
 @click.option("-o", "--output", type=click.File("wb"))
 @pass_api
-def download_sample(api, id, md5, sha1, sha256, output):
+def download_sample(api, id, md5, sha1, sha256, output):  # noqa: A002
     """Download sample by ID, MD5, SHA1, or SHA256."""
     samples = api.samples(sample_id=id, md5=md5, sha1=sha1, sha256=sha256)
     if isinstance(samples, Sample):

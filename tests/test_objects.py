@@ -19,11 +19,12 @@ import datetime
 
 import mock
 import pytest
-from websocket import WebSocketConnectionClosedException
 from dateutil.tz import tzutc
+from websocket import WebSocketConnectionClosedException
 
 from vxcube_api.errors import VxCubeApiException
-from vxcube_api.objects import Analysis, ApiObject, CureIt, Sample, Session, Task
+from vxcube_api.objects import (Analysis, ApiObject, CureIt, Sample, Session,
+                                Task)
 from vxcube_api.raw_api import VxCubeRawApi
 
 

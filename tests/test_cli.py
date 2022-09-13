@@ -24,8 +24,8 @@ from click.testing import CliRunner
 
 from vxcube_api.__main__ import cli, main
 from vxcube_api.cli_helpers import ClientConfig
-from vxcube_api.objects import Sample
 from vxcube_api.errors import VxCubeApiException
+from vxcube_api.objects import Sample
 from vxcube_api.utils import UTF8_CONSOLE
 
 
@@ -113,7 +113,8 @@ def test_login_with_new_key():
 
 
 def test_upload_sample():
-    api = mock.Mock()
+    sample = mock.Mock()
+    api = mock.Mock(**{"upload_samples.return_value": [sample]})
     vxcube_api_cls = mock.Mock(return_value=api)
     runner = CliRunner()
     params = [
@@ -133,12 +134,13 @@ def test_upload_sample():
     assert "Mock" in result.output
     assert "format not recognized" not in result.output
     vxcube_api_cls.assert_called_with(api_key="test-api-key", base_url="http://test.url", version=42)
-    api.upload_sample.assert_called_once()
+    api.upload_sample.assert_not_called()
+    api.upload_samples.assert_called_once()
 
 
 def test_upload_file_without_ext():
     sample = mock.Mock(format_name=None)
-    api = mock.Mock(**{"upload_sample.return_value": sample})
+    api = mock.Mock(**{"upload_samples.return_value": [sample]})
     vxcube_api_cls = mock.Mock(return_value=api)
     runner = CliRunner()
     params = [
@@ -158,7 +160,8 @@ def test_upload_file_without_ext():
     assert "Mock" in result.output
     assert "format not recognized" in result.output
     vxcube_api_cls.assert_called_with(api_key="test-api-key", base_url="http://test.url", version=42)
-    api.upload_sample.assert_called_once()
+    api.upload_sample.assert_not_called()
+    api.upload_samples.assert_called_once()
 
 
 def test_analyse():

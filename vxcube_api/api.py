@@ -14,14 +14,14 @@
 # AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
 # DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
-import json
 import logging
 from functools import wraps
 
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 from vxcube_api.errors import VxCubeApiException
-from vxcube_api.objects import Analysis, Format, License, Platform, Sample, Session, Task
+from vxcube_api.objects import (Analysis, Format, License, Platform, Sample,
+                                Session, Task)
 from vxcube_api.raw_api import VxCubeRawApi
 from vxcube_api.utils import file_wrapper, filter_data, iterator
 
@@ -120,8 +120,8 @@ class VxCubeApi(object):
         logger.debug("Get platforms")
         return self._raw_api.platforms.get()
 
-    @return_objects(License)
-    def license(self):
+    @return_objects(License)  # noqa: A003
+    def license(self):  # noqa: A003
         """
         Get information about current license.
 
@@ -166,7 +166,7 @@ class VxCubeApi(object):
 
     def samples_iter(self, count_per_request=100, **kwargs):
         """
-        Iterator over self.samples.
+        Iterate over self.samples.
 
         :param count_per_request:
         :param kwargs:
@@ -175,6 +175,14 @@ class VxCubeApi(object):
         logger.debug("Use sample iterator")
         kwargs.pop("sample_id", None)
         return iterator(func=self.samples, count_per_request=count_per_request, item_key=None, **kwargs)
+
+    def _upload_sample(self, file):
+        logger.debug("Upload sample to server")
+        with file_wrapper(file) as file:
+            fields = {"file": (file.name, file, "application/octet-stream")}
+            enc = MultipartEncoder(fields=fields)
+            headers = {"Content-Type": enc.content_type}
+            return self._raw_api.samples.post(data=enc, headers=headers)
 
     @return_objects(Sample, add_raw_api=True)
     def upload_sample(self, file):
@@ -185,15 +193,22 @@ class VxCubeApi(object):
         :return Sample:
         :raises VxCubeApiHttpException
         """
-        logger.debug("Upload sample to server")
-        with file_wrapper(file) as file:
-            fields = {"file": (file.name, file, "application/octet-stream")}
-            enc = MultipartEncoder(fields=fields)
-            headers = {"Content-Type": enc.content_type}
-            res = self._raw_api.samples.post(data=enc, headers=headers)
-            if "samples" in res:
-                res = res["samples"]
-            return res
+        return self._upload_sample(file)
+
+    @return_objects(Sample, add_raw_api=True)
+    def upload_samples(self, file):
+        """
+        Upload samples to Dr.Web vxCube server.
+
+        :param str or file-like object file: path or file-like object
+        :return list[Sample]:
+        :raises VxCubeApiHttpException
+        """
+        result = self._upload_sample(file)
+        if "samples" in result:
+            return result["samples"]
+        else:
+            return [result]
 
     @return_objects(Analysis, add_raw_api=True)
     def analyses(self, analysis_id=None, count=None, offset=None, format_group_name=None):
@@ -221,7 +236,7 @@ class VxCubeApi(object):
 
     def analyses_iter(self, count_per_request=100, **kwargs):
         """
-        Iterator over self.analyses.
+        Iterate over self.analyses.
 
         :param count_per_request:
         :param kwargs:

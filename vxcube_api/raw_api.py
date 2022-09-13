@@ -80,7 +80,7 @@ class VxCubeApiRequest(object):
         return None
 
     def send_request(self, *args, **kwargs):
-        """Wrapper for session.request.
+        """Wrap session.request.
 
         :param args:
         :param kwargs:

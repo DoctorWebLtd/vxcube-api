@@ -25,4 +25,4 @@ class VxCubeApiHttpException(VxCubeApiException):
         self.code = code
         self.response = response
         self.description = description or ""
-        super(Exception, self).__init__(self.description)
+        super(VxCubeApiHttpException, self).__init__(self.description)

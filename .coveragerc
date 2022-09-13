@@ -1,0 +1,3 @@
+[run]
+omit =
+    vxcube_api/version.py

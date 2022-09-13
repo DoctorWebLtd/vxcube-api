@@ -277,6 +277,21 @@ def test_upload_sample():
         assert sample._raw_api is api._raw_api
 
 
+def test_upload_samples():
+    request = mock.Mock(return_value={"samples": [{"id": 23}, {"id": 27}]})
+    with mock.patch("vxcube_api.raw_api.VxCubeApiRequest.request", new=request):
+        api = VxCubeApi(base_url="http://test", version=2.0)
+        file = io.BytesIO(b"zip_test_data")
+        file.name = "test.zip"
+        samples = api.upload_samples(file)
+        assert isinstance(samples, list)
+        assert len(samples) == 2
+        assert samples[0].id == 23
+        assert samples[0]._raw_api is api._raw_api
+        assert samples[1].id == 27
+        assert samples[1]._raw_api is api._raw_api
+
+
 def test_vxuserapi_one_analysis():
     request = mock.Mock(return_value={"id": 42})
     with mock.patch("vxcube_api.raw_api.VxCubeApiRequest.request", new=request):

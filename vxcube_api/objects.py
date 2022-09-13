@@ -108,6 +108,7 @@ class CureIt(ApiObject):
             raise VxCubeApiException("CureIt is not bound to Analysis or Task")
 
     def __repr__(self):
+        """Format repr depending on input data."""
         if self.analysis_id:
             _type = "Analysis"
             _id = self.analysis_id
@@ -327,7 +328,7 @@ class Task(ApiObject):
 
     def download_storage_file(self, path, output_file):
         logger.debug("Download file %s from archive", path)
-        data = dict(path=path)
+        data = {"path": path}
         return self._api.archive_storage.get(json=data, output_file=output_file)
 
     def restart(self):
@@ -432,6 +433,9 @@ class Analysis(ApiObject):
 
         return CureIt(analysis_id=self.id, _raw_api=self._raw_api, **data)
 
+    def refresh(self):
+        self.update(**self._api().get())
+
     def subscribe_progress(self):
         if self.is_finished:
             logger.debug("Cannot subscribe to analysis %d because it is finished", self.id)
@@ -463,4 +467,5 @@ class Analysis(ApiObject):
 
         finally:
             ws.close()
-            self.update(**self._api().get())
+            # Just final results update
+            self.refresh()

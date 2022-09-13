@@ -20,7 +20,7 @@ import pytest
 import requests
 
 from vxcube_api.errors import VxCubeApiException
-from vxcube_api.raw_api import _parse_version, VxCubeApiRequest, VxCubeRawApi
+from vxcube_api.raw_api import VxCubeApiRequest, VxCubeRawApi, _parse_version
 
 
 @pytest.mark.parametrize("version, result", [
